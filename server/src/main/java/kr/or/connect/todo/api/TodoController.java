@@ -29,6 +29,8 @@ public class TodoController {
     Collection<Todo> readList(){
         return todoService.findAll();
     }
+
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     Todo create(@RequestBody Todo todo){

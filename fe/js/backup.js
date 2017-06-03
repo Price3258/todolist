@@ -1,3 +1,8 @@
+/**
+ * Created by wontae on 2017. 6. 2..
+ */
+
+
 (function (window) {
     'use strict';
     // Your starting point. Enjoy the ride!
@@ -12,21 +17,6 @@
         });
     };
 
-    var counter = {
-        count: 0,
-        getCount: function () {
-            return this.count;
-        },
-        setCount: function (count) {
-            this.count = count;
-        },
-        subCount: function () {
-            return --this.count;
-        },
-        getComCount: function (completed) {
-            return this.count - completed;
-        }
-    };
 
     function getTodoList() {
         //Get ALL todo_list
@@ -92,13 +82,13 @@
                 liTag.not($el).hide();
                 $('.todo-count > strong').text($el.length);
                 filter.setFilter("completed");
-                counter.setCount($el.length);
+
             } else {
                 $el = $('.todo-list').children().not('.completed').fadeIn(450);
                 liTag.not($el).hide();
                 $('.todo-count > strong').text($el.length);
                 filter.setFilter("active");
-                counter.setCount($el.length);
+
             }
         });
     }
@@ -111,7 +101,7 @@
 
                 var new_todo = $('.new-todo').val();
                 if (new_todo === "") {
-                    //alert("Input Your plan");
+                    alert("Input Your plan");
                 } else {
                     $.ajax({
                         type: 'POST',
@@ -122,7 +112,6 @@
                             todo: new_todo
                         }),
                         success: function (response) {
-                            var length = $('.todo-list > li').hasClass("completed").length;
                             if (filter.getFilter() === "completed") {
                                 $('.todo-list').prepend(
                                     "<li id='" + response.id + "' style='display: none'>" +
@@ -133,8 +122,6 @@
                                     "</div>" +
                                     "</li>"
                                 );
-                                $('.todo-count > strong').text(length);
-
                             } else {
                                 $('.todo-list').prepend(
                                     "<li id='" + response.id + "'>" +
@@ -145,17 +132,10 @@
                                     "</div>" +
                                     "</li>"
                                 );
-                                if(filter.getFilter()==="all"){
-                                    $('.todo-count > strong').text($('.todo-list > li').length);
-
-                                }else{
-                                    $('.todo-count > strong').text($('.todo-list > li').not('.completed').length);
-
-                                }
                             }
 
                             $('.new-todo').val("");// Clear User input
-
+                            $('.todo-count > strong').text($('.todo-list > li').length);
 
                         },
                         error: function (request, status, error) {
@@ -173,6 +153,7 @@
         var check = 0;
         //update completed when user click check button
         $(document).on("click", ".toggle", function (event) {
+
             var li_tag = $(this).parent().parent();
             var li_Id = li_tag.attr('id');
             var completed;
@@ -191,24 +172,20 @@
                     completed: completed
                 }),
                 success: function () {
-
                     switch (filter.getFilter()) {
                         case "completed":
-
                             if (completed === 1) {
                                 $(this).attr("checked");
                                 $(li_tag).addClass("completed");
                             } else {
                                 $(this).removeAttr("checked");
                                 $(li_tag).removeClass("completed").css("display", "none");
-                                $('.todo-count > strong').text(counter.subCount());
                             }
                             break;
                         case "active":
                             if (completed === 1) {
                                 $(this).attr("checked");
                                 $(li_tag).addClass("completed").css("display", "none");
-                                $('.todo-count > strong').text(counter.subCount());
                             } else {
                                 $(this).removeAttr("checked");
                                 $(li_tag).removeClass("completed");
@@ -284,6 +261,40 @@
                 }
             });
         });
+    }
+
+    var countTodo = {
+        getCompletedOrActive: function (completed) {
+            $.ajax({
+                type: 'GET',
+                url: '/api/todos/count/' + completed,
+                dataType: 'json',
+                data: JSON.stringify({
+                    completed: completed
+                }),
+                success: function (response) {
+                    $('.todo-count > strong').text(response);
+                },
+                error: function (request, status, error) {
+                    alert("code:" + request.status + "\n" + "message:" +
+                        request.responseText + "\n" + "error:" + error);
+                }
+            });
+
+        },
+        getAll: function () {
+            $.ajax({
+                type: 'GET',
+                url: '/api/todos/count',
+                success: function (response) {
+                    $('.todo-count > strong').text(response);
+                },
+                error: function (request, status, error) {
+                    alert("code:" + request.status + "\n" + "message:" +
+                        request.responseText + "\n" + "error:" + error);
+                }
+            });
+        }
     }
 })(window);
 

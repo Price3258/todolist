@@ -63,6 +63,12 @@ public class TodoDao{
 		params.put("id",id);
 		return jdbc.queryForObject(SELECT_BY_ID, params, rowMapper);
 	}
+	
+	public Integer countAllTodo(){
+		Integer count=0;
+		return jdbc.query(COUNT_ALL_TODO,count,rowMapper);
+	}
+	
 
 }
 
