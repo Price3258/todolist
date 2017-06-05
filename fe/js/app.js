@@ -22,9 +22,6 @@
         },
         subCount: function () {
             return --this.count;
-        },
-        getComCount: function (completed) {
-            return this.count - completed;
         }
     };
 
@@ -83,22 +80,26 @@
             event.preventDefault();
             var $el;
             var liTag = $('.todo-list > li');
+            $('.filters > li >a').removeClass('selected');
             if (this.id === 'all') {
                 liTag.fadeIn(450);
                 $('.todo-count > strong').text(liTag.length);
                 filter.setFilter("all");
+                $(this).addClass('selected');
             } else if (this.id === 'completed') {
                 $el = $('.' + this.id).fadeIn(450);
                 liTag.not($el).hide();
                 $('.todo-count > strong').text($el.length);
                 filter.setFilter("completed");
                 counter.setCount($el.length);
+                $(this).addClass('selected');
             } else {
                 $el = $('.todo-list').children().not('.completed').fadeIn(450);
                 liTag.not($el).hide();
                 $('.todo-count > strong').text($el.length);
                 filter.setFilter("active");
                 counter.setCount($el.length);
+                $(this).addClass('selected');
             }
         });
     }
@@ -109,8 +110,8 @@
         $('.new-todo').on('keypress', function (e) {
             if (e.which === 13) {/* 13 == enter key@ascii */
 
-                var new_todo = $('.new-todo').val();
-                if (new_todo === "") {
+                var new_todo = $('.new-todo').val().trim();
+                if (new_todo==="") {
                     //alert("Input Your plan");
                 } else {
                     $.ajax({
